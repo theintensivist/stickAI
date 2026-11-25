@@ -266,7 +266,7 @@ Build details:
 - Libraries: M5Unified and M5GFX 0.3.0, ArduinoJson 7, and a lightly patched copy of arduinoWebSockets in [`lib/`](lib/arduinoWebSockets).
 - `WEBSOCKETS_MAX_DATA_SIZE` is raised to 512 KB because Gemini can send large audio messages.
 
-Releases are built automatically: pushing a tag such as `v0.11.0` runs [`.github/workflows/release.yml`](.github/workflows/release.yml), which builds the firmware from this source, checks that no API key slipped into it, and publishes the files on the Releases page.
+Releases are built automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): it builds the firmware from this source, checks that no API key slipped into it, and publishes the files on the Releases page. Start it by pushing a tag such as `v0.11.0`, or from the **Actions** tab: choose **Build and release firmware**, click **Run workflow** and type the version.
 
 To make the same files yourself after building:
 

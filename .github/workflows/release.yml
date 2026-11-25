@@ -1,12 +1,19 @@
-# Builds the firmware from source whenever a version tag (e.g. v0.11.0) is pushed,
-# and publishes a GitHub release with ready-to-flash files.
-# It can also be run by hand from the Actions tab to just build and check.
+# Builds the firmware from source and publishes a GitHub release with
+# ready-to-flash files. Two ways to start it:
+#   - push a version tag, e.g. v0.11.0
+#   - Actions tab > "Build and release firmware" > Run workflow, and type a
+#     version such as 0.11.0 (leave it empty to only build and check)
 name: Build and release firmware
 
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, e.g. 0.11.0 (empty = only build)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -34,11 +41,16 @@ jobs:
         run: pio run
 
       - name: Make flashable files
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
           B=.pio/build/m5stack-sticks3
           BOOT_APP0=~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin
-          V="${GITHUB_REF_NAME#v}"
-          [ "$GITHUB_REF_TYPE" = "tag" ] || V="dev"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then V="${GITHUB_REF_NAME#v}"
+          elif [ -n "$INPUT_VERSION" ]; then V="${INPUT_VERSION#v}"
+          else V="dev"; fi
+          if ! echo "$V" | grep -qE '^[0-9A-Za-z.-]+$'; then echo "::error::Version can only contain letters, digits, dots and dashes"; exit 1; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
           mkdir -p out
           esptool.py --chip esp32s3 merge_bin -o "out/stickai-v${V}-full.bin" \
             --flash_mode keep --flash_freq keep --flash_size 8MB \
@@ -56,9 +68,11 @@ jobs:
           path: out/*
 
       - name: Publish release
-        if: github.ref_type == 'tag'
+        if: env.VERSION != 'dev'
         uses: softprops/action-gh-release@v2
         with:
-          name: "stickAI ${{ github.ref_name }}"
+          tag_name: v${{ env.VERSION }}
+          target_commitish: ${{ github.sha }}
+          name: "stickAI ${{ env.VERSION }}"
           body_path: .github/release-notes.md
           files: out/*
