@@ -1,0 +1,64 @@
+# Builds the firmware from source whenever a version tag (e.g. v0.11.0) is pushed,
+# and publishes a GitHub release with ready-to-flash files.
+# It can also be run by hand from the Actions tab to just build and check.
+name: Build and release firmware
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+
+      - name: Install PlatformIO and esptool
+        run: pip install --upgrade platformio "esptool<5"
+
+      - name: Build
+        run: pio run
+
+      - name: Make flashable files
+        run: |
+          B=.pio/build/m5stack-sticks3
+          BOOT_APP0=~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin
+          V="${GITHUB_REF_NAME#v}"
+          [ "$GITHUB_REF_TYPE" = "tag" ] || V="dev"
+          mkdir -p out
+          esptool.py --chip esp32s3 merge_bin -o "out/stickai-v${V}-full.bin" \
+            --flash_mode keep --flash_freq keep --flash_size 8MB \
+            0x0 $B/bootloader.bin 0x8000 $B/partitions.bin 0xe000 $BOOT_APP0 0x10000 $B/firmware.bin
+          cp $B/firmware.bin "out/stickai-v${V}-update.bin"
+          (cd out && sha256sum *.bin > SHA256SUMS.txt && cat SHA256SUMS.txt)
+          # Safety net: never publish a firmware file that contains a Gemini API key
+          if strings -n 8 out/*.bin | grep -qE 'AIza[0-9A-Za-z_-]{20,}'; then
+            echo "::error::An API key was found in the firmware. Not publishing."; exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stickai-firmware
+          path: out/*
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "stickAI ${{ github.ref_name }}"
+          body_path: .github/release-notes.md
+          files: out/*

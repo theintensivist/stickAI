@@ -266,12 +266,14 @@ Build details:
 - Libraries: M5Unified and M5GFX 0.3.0, ArduinoJson 7, and a lightly patched copy of arduinoWebSockets in [`lib/`](lib/arduinoWebSockets).
 - `WEBSOCKETS_MAX_DATA_SIZE` is raised to 512 KB because Gemini can send large audio messages.
 
-To make the release files yourself after building:
+Releases are built automatically: pushing a tag such as `v0.11.0` runs [`.github/workflows/release.yml`](.github/workflows/release.yml), which builds the firmware from this source, checks that no API key slipped into it, and publishes the files on the Releases page.
+
+To make the same files yourself after building:
 
 ```bash
 B=.pio/build/m5stack-sticks3
 BOOT_APP0=~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin
-python -m esptool --chip esp32s3 merge_bin -o stickai-full.bin \
+esptool.py --chip esp32s3 merge_bin -o stickai-full.bin \
   --flash_mode keep --flash_freq keep --flash_size 8MB \
   0x0 $B/bootloader.bin 0x8000 $B/partitions.bin 0xe000 $BOOT_APP0 0x10000 $B/firmware.bin
 cp $B/firmware.bin stickai.bin
@@ -299,6 +301,7 @@ The default model is `gemini-3.8-live`. You can change it on the settings page w
 | [`src/certs.h`](src/certs.h) | Root certificates used to verify Google's servers |
 | [`docs/`](docs/) | The browser installer page and ready-to-flash firmware |
 | [`tools/make_vlw.py`](tools/make_vlw.py) | Converts a TrueType font into the screen font |
+| [`.github/workflows/release.yml`](.github/workflows/release.yml) | Builds and publishes release firmware when a version tag is pushed |
 
 ---
 
