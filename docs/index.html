@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Install stickAI on your M5Stack StickS3</title>
+  <meta name="description" content="One-click browser installer for stickAI, a pocket Gemini voice assistant for the M5Stack StickS3 by Dr Abhijeet Anand.">
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    :root { --bg:#0b1117; --card:#111a22; --line:#1f2c36; --text:#d7e3e8; --muted:#8b98a5; --cyan:#00d2c8; --cyan-d:#005f5c; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:linear-gradient(160deg,#0b1117 0%,#062a2c 100%) fixed; color:var(--text);
+           font:16px/1.6 "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+    .banner { width:100%; height:auto; border-radius:16px; display:block; }
+    h1 { font-size: 30px; margin: 34px 0 6px; color:#fff; }
+    h2 { font-size: 20px; margin: 34px 0 10px; color:#fff; }
+    p.lead { color: var(--muted); margin-top: 0; }
+    .card { background: var(--card); border:1px solid var(--line); border-radius:16px; padding: 22px 24px; margin-top: 18px; }
+    ol { padding-left: 22px; margin: 0; } li { margin: 8px 0; }
+    b, strong { color:#fff; }
+    code { background:#0b1117; border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:14px; color:#9fe8e2; }
+    a { color: var(--cyan); }
+    .install { display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin: 22px 0 6px; }
+    .install button { background: var(--cyan); color:#002b29; border:0; border-radius:12px; padding:14px 26px;
+                      font-size:18px; font-weight:700; cursor:pointer; box-shadow: 0 0 24px rgba(0,210,200,.35); }
+    .install button:hover { filter: brightness(1.08); }
+    .warn { color:#ffcf6b; }
+    .note { color: var(--muted); font-size: 14px; }
+    img.screens { width:100%; height:auto; border-radius:12px; margin-top: 8px; }
+    footer { margin-top: 40px; color: var(--muted); font-size: 14px; text-align:center; }
+  </style>
+</head>
+<body>
+<main>
+  <img class="banner" src="images/banner.png" alt="stickAI: a pocket Gemini voice assistant for the M5Stack StickS3, by Dr Abhijeet Anand">
+
+  <h1>Install stickAI in your browser</h1>
+  <p class="lead">No software to install. You need <b>Chrome</b> or <b>Edge</b> on a computer (Firefox and Chrome on Android also work), a USB-C cable that carries data, and an M5Stack StickS3.</p>
+
+  <div class="card">
+    <ol>
+      <li>Connect the StickS3 to the computer with the USB-C cable.</li>
+      <li>Click <b>Install stickAI</b> below, choose the stick's port (often called <i>USB JTAG/serial debug unit</i>) and click <b>Connect</b>.</li>
+      <li>Click <b>Install</b>. On the <b>first</b> install, tick <b>Erase device</b> for a clean start. When updating later, leave it unticked to keep your Wi-Fi, API key, timers and reminders.</li>
+      <li>Wait about a minute until it says the installation is complete, then press the stick's power button once to restart it.</li>
+    </ol>
+    <div class="install">
+      <esp-web-install-button manifest="manifest.json">
+        <button slot="activate">Install stickAI</button>
+        <span slot="unsupported" class="warn">This browser can't talk to USB devices. Open this page in Chrome or Edge on a computer. iPhone and iPad can't install firmware.</span>
+        <span slot="not-allowed" class="warn">The installer only works when this page is opened over https.</span>
+      </esp-web-install-button>
+      <span class="note">Version 0.11 &middot; ESP32-S3</span>
+    </div>
+  </div>
+
+  <h2>If the stick isn't found</h2>
+  <div class="card">
+    <ol>
+      <li>Try another USB-C cable. Some cables only charge.</li>
+      <li>Put the stick in <b>download mode</b>: hold the power button until the green light blinks, then let go. Then click <b>Install stickAI</b> again.</li>
+      <li>On Windows, close any other program that might be using the port, such as a serial monitor.</li>
+    </ol>
+  </div>
+
+  <h2>After installing</h2>
+  <div class="card">
+    <ol>
+      <li>Get a free Gemini API key at <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>. Don't add billing to that project, so it can never cost you money.</li>
+      <li>The stick shows a QR code. Scan it with your phone to join the <b>stickAI-Setup</b> Wi-Fi (the password is on the stick).</li>
+      <li>On the page that opens, enter your Wi-Fi and paste the API key, then tap <b>Save and restart</b>.</li>
+      <li><b>Hold A</b> and say <i>"Hello, can you hear me?"</i></li>
+    </ol>
+    <p class="note">Your API key is typed on that page and stored only on your stick. It is never part of this download.</p>
+  </div>
+
+  <img class="screens" src="images/screens.png" alt="Simulated stickAI screens: start-up, assistant with a voice timer, and the English to Arabic interpreter">
+
+  <footer>
+    stickAI by Dr Abhijeet Anand &middot; MIT License &middot;
+    <a href="https://github.com/theintensivist/stickAI">Source code, full guide and troubleshooting on GitHub</a>
+  </footer>
+</main>
+</body>
+</html>

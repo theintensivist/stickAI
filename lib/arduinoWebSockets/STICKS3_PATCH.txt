@@ -1,0 +1,3 @@
+arduinoWebSockets by Markus Sattler (LGPL-2.1), commit 1c77130ce7aa299a20a4d72b75cd371c6f711fad.
+Local change: src/WebSockets.cpp passes the server's close code and reason to the
+application (as a WStype_ERROR event) so the stick can show why Gemini closed a session.

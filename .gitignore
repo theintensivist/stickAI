@@ -1,0 +1,19 @@
+# PlatformIO / editors
+.pio/
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs and captures from a stick (they can contain your IP address and phone-page PIN)
+*.log
+stickai-log*.txt
+*.wav
+
+# Secrets: never commit an API key
+secrets.h
+.env
+
+# OS / Python
+.DS_Store
+Thumbs.db
+__pycache__/
